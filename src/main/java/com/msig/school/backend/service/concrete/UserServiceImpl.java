@@ -11,64 +11,35 @@ import com.msig.school.backend.service.UserService;
 import com.msig.school.backend.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<UserDto, User, Long> implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    @Value("${default.password}")
+    private String defaultPassword;
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        super(userRepository, userMapper);
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-    }
-
-    @Override
-    public List<UserDto> getList(Pageable pageable) {
-        List<User> users = userRepository.findAll(pageable);
-        return userMapper.toModels(users);
-    }
-
-    @Override
-    public UserDto getById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        return userMapper.toModel(optionalUser.orElse(null));
-    }
-
-    @Override
-    @Transactional
-    public UserDto updateById(Long id, UserDto userDto) {
-        User user = userMapper.toEntity(this.getById(id));
-        if(Objects.isNull(user)){
-            return null;
-        }
-        user = userMapper.toEntity(userDto);
-        return userMapper.toModel(userRepository.save(user));
-    }
-
-    @Override
-    @Transactional
-    public Boolean deleteById(Long id) {
-        User getUser = userMapper.toEntity(this.getById(id));
-        if(Objects.isNull(getUser)){
-            return Boolean.FALSE;
-        }
-        userRepository.deleteById(id);
-        return  Boolean.TRUE;
     }
 
     @Override
     @Transactional
     public UserDto create(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
+        Argon2PasswordEncoder encoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+        String hashedPassword = encoder.encode(defaultPassword);
+        user.setHashedPassword(hashedPassword);
         return userMapper.toModel(userRepository.save(user));
     }
 
@@ -86,12 +57,12 @@ public class UserServiceImpl implements UserService {
     public TokenDto login(LoginDto login) {
         Optional<User> optionalUser = userRepository.findByEmail(login.getEmail());
         User user = optionalUser.orElse(null);
-        if(Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             return null;
         }
         Argon2PasswordEncoder encoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         boolean matches = encoder.matches(login.getPassword(), user.getHashedPassword());
-        if(!matches){
+        if (!matches) {
             return null;
         }
         String token = JwtUtil.generateToken(userMapper.toModel(user));

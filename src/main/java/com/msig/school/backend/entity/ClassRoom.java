@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "ClassRoomEntity")
-@Table(name = "class_room")
+@Table(name = "class_room", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "year"}))
 public class ClassRoom extends Base implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;

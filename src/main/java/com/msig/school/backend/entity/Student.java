@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity(name = "StudentEntity")
 @Table(name = "student")
 public class Student extends Base implements Serializable {
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "student")

@@ -1,6 +1,7 @@
 package com.msig.school.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.msig.school.backend.enums.RoleType;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class UserDto {
     private String email;
     @JsonIgnore
     private String hashedPassword;
+    private RoleType roleType;
 }
