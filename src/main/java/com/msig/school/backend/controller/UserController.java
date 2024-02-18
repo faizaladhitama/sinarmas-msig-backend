@@ -1,6 +1,9 @@
 package com.msig.school.backend.controller;
 
 import com.msig.school.backend.entity.User;
+import com.msig.school.backend.model.LoginDto;
+import com.msig.school.backend.model.RegisterDto;
+import com.msig.school.backend.model.TokenDto;
 import com.msig.school.backend.model.UserDto;
 import com.msig.school.backend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,5 +44,15 @@ public class UserController {
     @DeleteMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
     public @ResponseBody Boolean delete(@PathVariable("id") Long id){
         return userService.deleteById(id);
+    }
+
+    @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
+    public @ResponseBody UserDto register(@RequestBody  RegisterDto register){
+        return userService.register(register);
+    }
+
+    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    public @ResponseBody TokenDto login(@RequestBody LoginDto login){
+        return userService.login(login);
     }
 }

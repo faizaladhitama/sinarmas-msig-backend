@@ -1,7 +1,6 @@
 package com.msig.school.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserDto {
-    private Long id;
+public class RegisterDto {
+    @NotBlank
     private String username;
+    @NotBlank
     private String email;
-    @JsonIgnore
-    private String hashedPassword;
+    @NotBlank
+    private String password;
+    @NotBlank
+    private String passwordConfirmation;
 }
