@@ -6,17 +6,15 @@ import com.msig.school.backend.model.RegisterDto;
 import com.msig.school.backend.model.TokenDto;
 import com.msig.school.backend.model.UserDto;
 import com.msig.school.backend.service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/user")
 @Slf4j
-public class UserController extends BaseController<UserDto, User, Long>{
+public class UserController extends BaseController<UserDto, User, Long> {
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -25,12 +23,16 @@ public class UserController extends BaseController<UserDto, User, Long>{
     }
 
     @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
-    public @ResponseBody UserDto register(@RequestBody  RegisterDto register){
+    @RateLimiter(name = "userController")
+    @CircuitBreaker(name = "userController")
+    public @ResponseBody UserDto register(@RequestBody RegisterDto register) {
         return userService.register(register);
     }
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
-    public @ResponseBody TokenDto login(@RequestBody LoginDto login){
+    @RateLimiter(name = "userController")
+    @CircuitBreaker(name = "userController")
+    public @ResponseBody TokenDto login(@RequestBody LoginDto login) {
         return userService.login(login);
     }
 }

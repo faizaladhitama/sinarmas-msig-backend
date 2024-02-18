@@ -20,15 +20,15 @@ import java.util.function.Function;
 @Component
 public class JwtUtil implements Serializable {
     @Value("${jwt.secret}")
-    private static String secret;
+    private String secret;
     @Value("${jwt.expiration}")
-    private static Long expiration;
+    private Long expiration;
 
-    private static SecretKey getSigningKey() {
+    private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
-    public static String generateToken(UserDto user) {
+    public String generateToken(UserDto user) {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .id(user.getEmail())
@@ -37,11 +37,11 @@ public class JwtUtil implements Serializable {
                 .signWith(getSigningKey()).compact();
     }
 
-    public static Date convertToDate(LocalDateTime dateTime) {
+    public Date convertToDate(LocalDateTime dateTime) {
         return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    public static LocalDateTime tokenExpiration() {
+    public LocalDateTime tokenExpiration() {
         return LocalDateTime.now().plusMinutes(expiration);
     }
 

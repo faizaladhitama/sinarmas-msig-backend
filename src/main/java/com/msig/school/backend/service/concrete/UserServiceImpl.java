@@ -24,13 +24,15 @@ import java.util.Optional;
 public class UserServiceImpl extends BaseServiceImpl<UserDto, User, Long> implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
     @Value("${default.password}")
     private String defaultPassword;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtUtil jwtUtil) {
         super(userRepository, userMapper);
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDto, User, Long> implem
         if (!matches) {
             return null;
         }
-        String token = JwtUtil.generateToken(userMapper.toModel(user));
-        return TokenDto.builder().token(token).expiredAt(JwtUtil.tokenExpiration()).generatedAt(LocalDateTime.now()).build();
+        String token = jwtUtil.generateToken(userMapper.toModel(user));
+        return TokenDto.builder().token(token).expiredAt(jwtUtil.tokenExpiration()).generatedAt(LocalDateTime.now()).build();
     }
 }
