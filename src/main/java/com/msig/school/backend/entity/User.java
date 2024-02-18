@@ -1,18 +1,18 @@
 package com.msig.school.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity(name = "UserEntity")
 @Table(name = "user")
-public class User extends Base {
+public class User extends Base implements Serializable {
     @Column(name = "username", nullable = false)
     private String username;
     @Column(name = "email", nullable = false)

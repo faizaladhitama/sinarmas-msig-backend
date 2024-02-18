@@ -34,11 +34,11 @@ public class JwtUtil implements Serializable {
                 .id(user.getEmail())
                 .issuedAt(convertToDate(LocalDateTime.now()))
                 .expiration(convertToDate(tokenExpiration()))
-                .signWith(SignatureAlgorithm.HS512, getSigningKey()).compact();
+                .signWith(getSigningKey()).compact();
     }
 
     public static Date convertToDate(LocalDateTime dateTime) {
-        return Date.from(dateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static LocalDateTime tokenExpiration() {
