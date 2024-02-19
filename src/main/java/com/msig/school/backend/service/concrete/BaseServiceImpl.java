@@ -1,7 +1,10 @@
 package com.msig.school.backend.service.concrete;
 
+import com.msig.school.backend.entity.User;
 import com.msig.school.backend.mapper.BaseMapper;
+import com.msig.school.backend.model.UserDto;
 import com.msig.school.backend.service.BaseService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
@@ -14,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Service
 @Slf4j
 public class BaseServiceImpl<Model, Entity, PrimaryKey> implements BaseService<Model, Entity, PrimaryKey> {
     private final JpaRepository<Entity, PrimaryKey> repository;
@@ -70,7 +72,35 @@ public class BaseServiceImpl<Model, Entity, PrimaryKey> implements BaseService<M
     @Transactional
     @Override
     public Model create(Model model) {
+        Example<Entity> example = getExample(model);
+        if(!Objects.isNull(example)){
+            Entity entityFound = uniqueValidation(example);
+            if(!Objects.isNull(entityFound)){
+                throw new EntityExistsException("Entity exists");
+            }
+        }
+
         Entity entity = baseMapper.toEntity(model);
         return baseMapper.toModel(repository.save(entity));
+    }
+
+    @Override
+    public Entity uniqueValidation(Example<Entity> example) {
+        Optional<Entity> entity = repository.findOne(example);
+        return entity.orElse(null);
+    }
+
+    @Override
+    public Entity getObjForExample(Model user){
+        return null;
+    }
+
+    @Override
+    public Example<Entity> getExample(Model model){
+        Entity entity = getObjForExample(model);
+        if(Objects.isNull(entity)){
+            return null;
+        }
+        return Example.of(getObjForExample(model));
     }
 }

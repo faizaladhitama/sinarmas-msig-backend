@@ -1,5 +1,6 @@
 package com.msig.school.backend.service;
 
+import com.msig.school.backend.entity.User;
 import com.msig.school.backend.model.UserDto;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,10 @@ public interface BaseService<Model, Entity, PrimaryKey> {
     Boolean deleteById(PrimaryKey id);
 
     Model create(Model model);
+
+    Entity uniqueValidation(Example<Entity> example);
+
+    Entity getObjForExample(Model model);
+
+    Example<Entity> getExample(Model model);
 }
